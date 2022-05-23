@@ -1,7 +1,8 @@
 const ContactRepository = require('../repositories/ContactsRepository');
 
+// Metodos da aplicaçao
 class ContactController {
-  // Metodos da aplicaçao
+  // Obter Varios registros
   async index(request, response) {
     const contacts = await ContactRepository.findAll();
     response.json(contacts);
@@ -19,8 +20,21 @@ class ContactController {
     response.json(contact);
   }
 
-  store() {
+  async store(request, response) {
     // Criar um novo registro
+    const {
+      name, email, phone, categoryId,
+    } = request.body;
+
+    const contactExists = await ContactRepository.findByIdEmail(email);
+
+    if (contactExists) {
+      return response.status(400).json({ error: 'This e-mail is already been taken' });
+    }
+    const contact = await ContactRepository.create({
+      name, email, phone, categoryId,
+    });
+    response.json(contact);
   }
 
   update() {
